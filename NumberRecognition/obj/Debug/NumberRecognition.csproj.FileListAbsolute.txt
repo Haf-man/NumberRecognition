@@ -1,1 +1,6 @@
 c:\users\keyww\documents\visual studio 2013\Projects\NumberRecognition\NumberRecognition\bin\Debug\NumberRecognition.exe.config
+C:\Users\keyww\documents\visual studio 2013\Projects\NumberRecognition\NumberRecognition\obj\Debug\NumberRecognition.csprojResolveAssemblyReference.cache
+C:\Users\keyww\documents\visual studio 2013\Projects\NumberRecognition\NumberRecognition\bin\Debug\NumberRecognition.exe
+C:\Users\keyww\documents\visual studio 2013\Projects\NumberRecognition\NumberRecognition\bin\Debug\NumberRecognition.pdb
+C:\Users\keyww\documents\visual studio 2013\Projects\NumberRecognition\NumberRecognition\obj\Debug\NumberRecognition.exe
+C:\Users\keyww\documents\visual studio 2013\Projects\NumberRecognition\NumberRecognition\obj\Debug\NumberRecognition.pdb

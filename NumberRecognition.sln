@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30501.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumberRecognition", "NumberRecognition\NumberRecognition.csproj", "{A9D29B4B-D7E0-404E-8598-F6093A83138C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NeuralNetworik", "NeuralNetworik\NeuralNetworik.csproj", "{FE011451-E0D7-486D-9C53-B3D40FA565D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{A9D29B4B-D7E0-404E-8598-F6093A83138C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A9D29B4B-D7E0-404E-8598-F6093A83138C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A9D29B4B-D7E0-404E-8598-F6093A83138C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE011451-E0D7-486D-9C53-B3D40FA565D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE011451-E0D7-486D-9C53-B3D40FA565D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE011451-E0D7-486D-9C53-B3D40FA565D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE011451-E0D7-486D-9C53-B3D40FA565D6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

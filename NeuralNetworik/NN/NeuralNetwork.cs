@@ -1,10 +1,9 @@
-﻿using System;
-using System.Data;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
+using NeuralNetworik.Utils;
 using Newtonsoft.Json;
 
-namespace NeuralNetworik
+namespace NeuralNetworik.NN
 {
     public class NeuralNetwork
     {
@@ -38,6 +37,11 @@ namespace NeuralNetworik
             }
         }
 
+        /// <summary>
+        /// Returns array of responses from last layer
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
         public int[] ComputeOutput(int[] input)
         {
             int[] tempPrev = (int[]) input.Clone();

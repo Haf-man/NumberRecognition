@@ -1,7 +1,6 @@
 ﻿using System;
-using System.Runtime.InteropServices.ComTypes;
 
-namespace NeuralNetworik
+namespace NeuralNetworik.Utils
 {
     public static class Extensions
     {

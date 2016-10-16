@@ -1,4 +1,4 @@
-﻿namespace NeuralNetworik
+﻿namespace NeuralNetworik.NN
 {
     public class NNTraining
     {

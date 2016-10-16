@@ -34,6 +34,6 @@ namespace NeuralNetworik
             };
         }
 
-        public static Size InputImageSize = new Size(32, 32);
+        public static readonly Size InputImageSize = new Size(32, 32);
     }
 }

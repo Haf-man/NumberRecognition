@@ -10,3 +10,9 @@ C:\Users\aleksandr\Documents\Under_development\NumberRecognition\NumberRecogniti
 C:\Users\aleksandr\Documents\Under_development\NumberRecognition\NumberRecognition\bin\Debug\NumberRecognition.exe
 C:\Users\aleksandr\Documents\Under_development\NumberRecognition\NumberRecognition\bin\Debug\NumberRecognition.pdb
 C:\Users\aleksandr\Documents\Under_development\NumberRecognition\NumberRecognition\obj\Debug\NumberRecognition.csprojResolveAssemblyReference.cache
+C:\Users\keyww\Documents\Visual Studio 2013\Projects\NumberRecognitionA\NumberRecognition\NumberRecognition\bin\Debug\NumberRecognition.exe.config
+C:\Users\keyww\Documents\Visual Studio 2013\Projects\NumberRecognitionA\NumberRecognition\NumberRecognition\bin\Debug\NumberRecognition.exe
+C:\Users\keyww\Documents\Visual Studio 2013\Projects\NumberRecognitionA\NumberRecognition\NumberRecognition\bin\Debug\NumberRecognition.pdb
+C:\Users\keyww\Documents\Visual Studio 2013\Projects\NumberRecognitionA\NumberRecognition\NumberRecognition\obj\Debug\NumberRecognition.csprojResolveAssemblyReference.cache
+C:\Users\keyww\Documents\Visual Studio 2013\Projects\NumberRecognitionA\NumberRecognition\NumberRecognition\obj\Debug\NumberRecognition.exe
+C:\Users\keyww\Documents\Visual Studio 2013\Projects\NumberRecognitionA\NumberRecognition\NumberRecognition\obj\Debug\NumberRecognition.pdb

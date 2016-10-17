@@ -20,26 +20,26 @@ namespace NumberRecognition
   }
   public class NumberToDigitConverter
   {
-    private bool[,] image;
+    private int[,] image;
     
     private int imageHeight;
     private int imageWidth;
-    private List<bool[,]> images;
+    private List<int[,]> images;
     private int[] dx = {-1, 0, 1, -1, 1, -1, 0, 1};
     private int[] dy = {-1, -1, -1, 0, 0, 1, 1, 1};
-    private bool[,] imageZero;
-    public NumberToDigitConverter(bool[,] _image, int width, int height)
+    private int[,] imageZero;
+    public NumberToDigitConverter(int[,] _image, int width, int height)
     {
       image = _image;
       imageHeight = height;
       imageWidth = width;
-      images = new List<bool[,]>();
+      images = new List<int[,]>();
       this.imageZero = _image;
     }
 
-    public List<bool[,]> Convert()
+    public List<int[,]> Convert()
     {
-      List<bool[,]> digitImages = new List<bool[,]>();
+      List<int[,]> digitImages = new List<int[,]>();
       for(int i = 0 ; i < imageWidth ; i++)
         for(int j = 0 ; j < imageHeight ; j++)
           if (image[i, j])
@@ -48,9 +48,9 @@ namespace NumberRecognition
       return digitImages;
     }
 
-    private bool[,] createDigitImage(Pair<Point> pair)
+    private int[,] createDigitImage(Pair<Point> pair)
     {
-      bool[,] digitImage = new bool[pair.second.X-pair.first.X + 1,pair.second.Y-pair.first.Y +1];
+      int[,] digitImage = new int[pair.second.X-pair.first.X + 1,pair.second.Y-pair.first.Y +1];
 
       for(int i =  pair.first.X ; i<= pair.second.X ; i++)
         for (int j = pair.first.Y; j <= pair.second.Y; j++)
@@ -92,7 +92,7 @@ namespace NumberRecognition
     {
       Pair<Point> border = new Pair<Point>( new Point(imageWidth, imageHeight), new Point(0, 0));
 
-      image[x, y] = false;
+      image[x, y] = 0;
       for (int i = 0; i < 8; i++)
       {
         if (x + dx[i] >= 0 && x + dx[i] < imageWidth && y + dy[i] >= 0 && y + dy[i] < imageHeight)

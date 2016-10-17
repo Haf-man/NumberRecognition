@@ -124,7 +124,7 @@ namespace InterfaceForCV
                 {
                     for (int j = 0; j < width; ++j)
                     {
-                        convertedImage[i, j] = bitmap.GetPixel(i, j) == Color.Black ? 1 : 0;
+                        convertedImage[i, j] = bitmap.GetPixel(j, i) == Color.Black ? 1 : 0;
                     }
                 }
             }

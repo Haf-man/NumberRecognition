@@ -17,6 +17,7 @@ namespace InterfaceForCV
         Point lastPoint;
         Graphics g;
         int widthOfLine;
+
         public Form1()
         {
             InitializeComponent();
@@ -27,20 +28,18 @@ namespace InterfaceForCV
 
         private void PaintingPanel_MouseDown(object sender, MouseEventArgs e)
         {
-            
         }
 
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             Image image = pictureBox1.Image;
             g = Graphics.FromImage(image);
-            lastPoint = e.Location;// может стоит копии точек создавать. Они не уничтожаются до того, как используются?
+            lastPoint = e.Location; // может стоит копии точек создавать. Они не уничтожаются до того, как используются?
             paint = true;
         }
 
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
-
         }
 
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
@@ -55,9 +54,9 @@ namespace InterfaceForCV
             {
                 Point сurrPoint = e.Location;
                 Pen pen = new Pen(Brushes.Black, widthOfLine);
-                g.DrawLine( pen, lastPoint, сurrPoint);
-                g.FillEllipse(Brushes.Black, e.X- widthOfLine / 2, e.Y - widthOfLine / 2, widthOfLine, widthOfLine);
-                
+                g.DrawLine(pen, lastPoint, сurrPoint);
+                g.FillEllipse(Brushes.Black, e.X - widthOfLine / 2, e.Y - widthOfLine / 2, widthOfLine, widthOfLine);
+
                 lastPoint = сurrPoint;
                 pictureBox1.Invalidate();
             }
@@ -76,7 +75,7 @@ namespace InterfaceForCV
             int win_width = pictureBox1.Width;
             int win_height = pictureBox1.Height;
 
-            int M = Math.Min(win_width* img_height, win_height* img_width);
+            int M = Math.Min(win_width * img_height, win_height * img_width);
             int newImgWidth = M / img_height;
             int newImgHeight = M / img_width;
 
@@ -84,9 +83,9 @@ namespace InterfaceForCV
             Image image = pictureBox1.Image;
             g = Graphics.FromImage(image);
             Point Location = new Point();
-            Location.X = (win_width - newImgWidth)/2;
-            Location.Y = (win_height - newImgHeight)/2;
-            g.DrawImage(bmp, Location.X, Location.Y);//по центру нужно
+            Location.X = (win_width - newImgWidth) / 2;
+            Location.Y = (win_height - newImgHeight) / 2;
+            g.DrawImage(bmp, Location.X, Location.Y); //по центру нужно
             g.Dispose();
             pictureBox1.Invalidate();
         }
@@ -104,17 +103,33 @@ namespace InterfaceForCV
         {
             outputLabel.Text = "";
 
-            Image image = pictureBox1.Image;
-            int [] numbers = RecognitionOfNumbers.Recognize(image);
-            foreach (int n in numbers)
-            {
-                outputLabel.Text += (n.ToString() + " ");
-            }
+            int[,] image = ConvertImage(pictureBox1.Image);
+            // TODO: make recognition
+            outputLabel.Text = "NaN";
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+        }
 
+        private int[,] ConvertImage(Image image)
+        {
+            int[,] convertedImage = new int[image.Height, image.Width];
+
+            using (Bitmap bitmap = new Bitmap(image))
+            {
+                int height = bitmap.Height;
+                int width = bitmap.Width;
+                for (int i = 0; i < height; ++i)
+                {
+                    for (int j = 0; j < width; ++j)
+                    {
+                        convertedImage[i, j] = bitmap.GetPixel(i, j) == Color.Black ? 1 : 0;
+                    }
+                }
+            }
+
+            return convertedImage;
         }
     }
 }

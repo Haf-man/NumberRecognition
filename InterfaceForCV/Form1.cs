@@ -52,6 +52,7 @@ namespace InterfaceForCV
           pictureBox1.Image = tempImage;
           pictureBox1.Invalidate();
             g.Dispose();
+          
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -59,12 +60,13 @@ namespace InterfaceForCV
             if (paint)
             {
                 Point сurrPoint = e.Location;
-                Pen pen = new Pen(Brushes.Black, widthOfLine);
+                Pen pen = new Pen(Brushes.Red, widthOfLine);
                 g.DrawLine(pen, lastPoint, сurrPoint);
                 g.FillEllipse(Brushes.Red, e.X - widthOfLine / 2, e.Y - widthOfLine / 2, widthOfLine, widthOfLine);
               
                 lastPoint = сurrPoint;
-                
+                pictureBox1.Image = tempImage;
+                pictureBox1.Invalidate();
             }
         }
 

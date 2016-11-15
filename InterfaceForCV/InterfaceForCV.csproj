@@ -83,6 +83,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\ImagePreprocessing\ImagePreprocessing.csproj">
+      <Project>{f5fe296a-907b-4296-b31d-d9ff2b233c26}</Project>
+      <Name>ImagePreprocessing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\NeuralNetworik\NeuralNetworik.csproj">
       <Project>{fe011451-e0d7-486d-9c53-b3d40fa565d6}</Project>
       <Name>NeuralNetworik</Name>

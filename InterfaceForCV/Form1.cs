@@ -8,6 +8,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
+using ImagePreprocessing;
+using NeuralNetworik.NN;
 using NumberRecognition;
 
 namespace InterfaceForCV
@@ -18,7 +20,9 @@ namespace InterfaceForCV
         Point lastPoint;
         Graphics g;
         int widthOfLine;
-      Bitmap tempImage;
+        Bitmap tempImage;
+        private NeuralNetwork _neuralNetwork;
+
         public Form1()
         {
             InitializeComponent();
@@ -34,12 +38,10 @@ namespace InterfaceForCV
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             Image image = pictureBox1.Image;
-          tempImage = new Bitmap(image);
+            tempImage = new Bitmap(image);
             g = Graphics.FromImage(tempImage);
             lastPoint = e.Location; // может стоит копии точек создавать. Они не уничтожаются до того, как используются?
             paint = true;
-         
-          
         }
 
         private void Form1_MouseUp(object sender, MouseEventArgs e)
@@ -49,10 +51,9 @@ namespace InterfaceForCV
         private void pictureBox1_MouseUp(object sender, MouseEventArgs e)
         {
             paint = false;
-          pictureBox1.Image = tempImage;
-          pictureBox1.Invalidate();
+            pictureBox1.Image = tempImage;
+            pictureBox1.Invalidate();
             g.Dispose();
-          
         }
 
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
@@ -63,7 +64,7 @@ namespace InterfaceForCV
                 Pen pen = new Pen(Brushes.Red, widthOfLine);
                 g.DrawLine(pen, lastPoint, сurrPoint);
                 g.FillEllipse(Brushes.Red, e.X - widthOfLine / 2, e.Y - widthOfLine / 2, widthOfLine, widthOfLine);
-              
+
                 lastPoint = сurrPoint;
                 pictureBox1.Image = tempImage;
                 pictureBox1.Invalidate();
@@ -100,8 +101,8 @@ namespace InterfaceForCV
 
         private void clearButton_Click(object sender, EventArgs e)
         {
-          Image image =   new Bitmap(pictureBox1.Width, pictureBox1.Height);
-          pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+            Image image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+            pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             g = Graphics.FromImage(image);
             g.Clear(Color.White);
             g.Dispose();
@@ -111,76 +112,77 @@ namespace InterfaceForCV
         private void recognizeButton_Click(object sender, EventArgs e)
         {
             outputLabel.Text = "";
-           
+
             int[,] image = ConvertImage(pictureBox1.Image);
-             
+
             NumberToDigitConverter converter = new NumberToDigitConverter(image, image.GetLength(0), image.GetLength(1));
-         List<Tuple<int[,],Pair<Point>>> digits =  converter.Convert();
-          List<int[,]> digitImages = new List<int[,]>();
-          List<Pair<Point>> digitBorders = new List<Pair<Point>>();
-          foreach (var v in digits)
-          {
-            digitImages.Add(v.Item1);
-            digitBorders.Add(v.Item2);
-            drawBorder(v.Item2);
-          }
-         
-         /* foreach (var v in digitImages)
-          {
-            pictureBox1.Image = ConvertImageToBitmap(v);
-            //pictureBox1.Invalidate();
-            pictureBox1.Refresh();
-            System.Threading.Thread.Sleep(2500);
-          }*/
-          // TODO: make recognition
-          Random rnd = new Random();
-            outputLabel.Text = rnd.Next(0,9).ToString();
+            List<Tuple<int[,], Pair<Point>>> digits = converter.Convert();
+            List<int[,]> digitImages = new List<int[,]>();
+            List<Pair<Point>> digitBorders = new List<Pair<Point>>();
+            foreach (var v in digits)
+            {
+                digitImages.Add(v.Item1);
+                digitBorders.Add(v.Item2);
+                drawBorder(v.Item2);
+            }
+
+            List<int> predictedInts = new List<int>();
+            foreach (var v in digitImages)
+            {
+                Preprocessing preprocessing = new Preprocessing(v, v.GetLength(0), v.GetLength(1));
+                var preprocessedImage = preprocessing.Preprocess();
+                predictedInts.Add(_neuralNetwork.ComputeResponse(preprocessedImage));
+            }
+
+            outputLabel.Text = string.Join(" ", predictedInts);
         }
 
-      private void drawBorder(Pair<Point> border)
-      {
-        paint = true;
-        Image image = pictureBox1.Image;
-        tempImage = new Bitmap(image);
-        g = Graphics.FromImage(tempImage);
-        Pen pen = new Pen(Brushes.Black, widthOfLine-9);
-        g.DrawLine(pen, border.first, new Point(border.first.X, border.second.Y));
-        g.DrawLine(pen, border.first, new Point(border.second.X, border.first.Y));
-        g.DrawLine(pen, new Point(border.first.X, border.second.Y), border.second);
-        g.DrawLine(pen, new Point(border.second.X, border.first.Y), border.second);
+        private void drawBorder(Pair<Point> border)
+        {
+            paint = true;
+            Image image = pictureBox1.Image;
+            tempImage = new Bitmap(image);
+            g = Graphics.FromImage(tempImage);
+            Pen pen = new Pen(Brushes.Black, widthOfLine - 9);
+            g.DrawLine(pen, border.first, new Point(border.first.X, border.second.Y));
+            g.DrawLine(pen, border.first, new Point(border.second.X, border.first.Y));
+            g.DrawLine(pen, new Point(border.first.X, border.second.Y), border.second);
+            g.DrawLine(pen, new Point(border.second.X, border.first.Y), border.second);
 
-        paint = false;
-        
-        pictureBox1.Image = tempImage;
-        pictureBox1.Invalidate();
-        g.Dispose();
-      }
+            paint = false;
+
+            pictureBox1.Image = tempImage;
+            pictureBox1.Invalidate();
+            g.Dispose();
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
+            _neuralNetwork = NeuralNetwork.ReadFrom("network.json");
         }
 
-      private Bitmap ConvertImageToBitmap(int[,] image)
-      {
-        int height = image.GetLength(1);
-        int width = image.GetLength(0);
-        Bitmap bitmap = new Bitmap(width, height );
+        private Bitmap ConvertImageToBitmap(int[,] image)
         {
-         
-          for (int i = 0; i < width; ++i)
-          {
-            for (int j = 0; j < height; ++j)
+            int height = image.GetLength(1);
+            int width = image.GetLength(0);
+            Bitmap bitmap = new Bitmap(width, height);
             {
-              bitmap.SetPixel(i, j,Convert.ToBoolean(image[i, j])?Color.Red: Color.DarkRed);
+                for (int i = 0; i < width; ++i)
+                {
+                    for (int j = 0; j < height; ++j)
+                    {
+                        bitmap.SetPixel(i, j, Convert.ToBoolean(image[i, j]) ? Color.Red : Color.DarkRed);
+                    }
+                }
             }
-          }
+            return bitmap;
         }
-        return bitmap;
-      }
+
         private int[,] ConvertImage(Image image)
         {
-            int[,] convertedImage = new int[ image.Width, image.Height];
+            int[,] convertedImage = new int[image.Width, image.Height];
             Color cc = BackColor;
-          List<Color> colors = new List<Color>();
+            List<Color> colors = new List<Color>();
             bool flag = true;
             using (Bitmap bitmap = new Bitmap(image))
             {
@@ -191,30 +193,30 @@ namespace InterfaceForCV
                 {
                     for (int j = 0; j < height; ++j)
                     {
-                     //   convertedImage[i, j] = bitmap.GetPixel(j, i) == cc ? 0 : 1;
-                       
+                        //   convertedImage[i, j] = bitmap.GetPixel(j, i) == cc ? 0 : 1;
+
                         if (flag)
                         {
-                          cc = bitmap.GetPixel(i, j);
-                          flag = false;
+                            cc = bitmap.GetPixel(i, j);
+                            flag = false;
                         }
                         Color c = bitmap.GetPixel(i, j);
-                      if (!colors.Contains(c) )
-                        colors.Add(c);
-                      if (colors.FindIndex(x=>x == c) == 0)
-                        convertedImage[i,j] = 0;
-                      else
-                      {
-                        convertedImage[i, j] = 1;
-                      }
-                      //if (bitmap.GetPixel(i,j) != cc)
-                      //{
-                       
-                        
-                      //  System.Drawing.KnownColor jk = Color.Black.ToKnownColor();
-                      //  height = bitmap.Height;
-                      //  int d = convertedImage[i, j];
-                      //} 
+                        if (!colors.Contains(c))
+                            colors.Add(c);
+                        if (colors.FindIndex(x => x == c) == 0)
+                            convertedImage[i, j] = 0;
+                        else
+                        {
+                            convertedImage[i, j] = 1;
+                        }
+                        //if (bitmap.GetPixel(i,j) != cc)
+                        //{
+
+
+                        //  System.Drawing.KnownColor jk = Color.Black.ToKnownColor();
+                        //  height = bitmap.Height;
+                        //  int d = convertedImage[i, j];
+                        //} 
                     }
                 }
             }
@@ -222,5 +224,4 @@ namespace InterfaceForCV
             return convertedImage;
         }
     }
-   
 }

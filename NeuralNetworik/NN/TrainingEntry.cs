@@ -2,7 +2,7 @@
 {
     public class TrainingEntry
     {
-        public int[] Input { get; set; }
+        public double[] Input { get; set; }
         public int Response { get; set; }
     }
 }

@@ -17,3 +17,9 @@ C:\Users\keyww\Documents\Visual Studio 2013\Projects\NumberRecognitionA\NumberRe
 C:\Users\keyww\Documents\Visual Studio 2013\Projects\NumberRecognitionA\NumberRecognition\NumberRecognition\obj\Debug\NumberRecognition.exe
 C:\Users\keyww\Documents\Visual Studio 2013\Projects\NumberRecognitionA\NumberRecognition\NumberRecognition\obj\Debug\NumberRecognition.pdb
 D:\Luida\Учебное\Магистратура\Распознавание образов\NumberRecognition\NumberRecognition\bin\Debug\NumberRecognition.exe.config
+E:\_Projects\Under_development\NumberRecognition\NumberRecognition\obj\Debug\NumberRecognition.csprojResolveAssemblyReference.cache
+E:\_Projects\Under_development\NumberRecognition\NumberRecognition\obj\Debug\NumberRecognition.exe
+E:\_Projects\Under_development\NumberRecognition\NumberRecognition\obj\Debug\NumberRecognition.pdb
+E:\_Projects\Under_development\NumberRecognition\NumberRecognition\bin\Debug\NumberRecognition.exe.config
+E:\_Projects\Under_development\NumberRecognition\NumberRecognition\bin\Debug\NumberRecognition.exe
+E:\_Projects\Under_development\NumberRecognition\NumberRecognition\bin\Debug\NumberRecognition.pdb

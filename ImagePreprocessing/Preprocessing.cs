@@ -31,20 +31,42 @@ namespace ImagePreprocessing
             }
         }
 
-        public int[,] preprocessing(int[,] _image, int _imageWidth, int _imageHeight)
+        public Preprocessing(int[,] _image, int _imageWidth, int _imageHeight)
         {
-            resize();
-            thickening();
             this.numAreas = countAreas();
+            this.image = _image;
+            this.imageHeight = _imageHeight;
+            this.imageWidth = _imageWidth;
+        }
 
-            return finalImage;
+        public double[] Preprocess()
+        {
+            Resize();
+            thickening();
+
+            return ToDoubles();
+        }
+
+        private double[] ToDoubles()
+        {
+            var doubleImage = new double[IMAGE_HEIGHT*IMAGE_WIDTH];
+
+            for (int i = 0, cnt = 0; i < IMAGE_HEIGHT; ++i)
+            {
+                for (int j = 0; j < IMAGE_WIDTH; ++j, ++cnt)
+                {
+                    doubleImage[cnt] = finalImage[i, j];
+                }
+            }
+
+            return doubleImage;
         }
 
         // масштабирование
-        private void resize()
+        private void Resize()
         {
-            double stepX = (double)IMAGE_HEIGHT / imageHeight;
-            double stepY = (double)IMAGE_WIDTH / imageWidth;
+            double stepX = (double) IMAGE_HEIGHT / imageHeight;
+            double stepY = (double) IMAGE_WIDTH / imageWidth;
 
             finalImage = new int[IMAGE_HEIGHT, IMAGE_WIDTH];
 
@@ -55,7 +77,7 @@ namespace ImagePreprocessing
             for (int i = 0; i < imageHeight; i++)
                 for (int j = 0; j < imageWidth; j++)
                     if (image[i, j] == 1)
-                        finalImage[(int)(i * stepX), (int)(j * stepY)] = 1;
+                        finalImage[(int) (i * stepX), (int) (j * stepY)] = 1;
         }
 
         //утолщение цифр 
@@ -63,11 +85,13 @@ namespace ImagePreprocessing
         {
             bool isAlone;
 
-            int[] dx = { -1, 1, 0, 0, -1, 1, -1, 1 };
-            int[] dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
+//            int[] dx = { -1, 1, 0, 0, -1, 1, -1, 1 };
+//            int[] dy = { -1, 1, 0, 0, -1, 1, -1, 1 };
+            int[] dx = {-1, 0, 1, -1, 1, -1, 0, 1};
+            int[] dy = {-1, -1, -1, 0, 0, 1, 1, 1};
 
             for (int i = 1; i < imageWidth - 1; i++)
-                for (int j = 1; j < imageHeight-1; j++)
+                for (int j = 1; j < imageHeight - 1; j++)
                 {
                     if (image[i, j] == 1)
                     {
@@ -117,13 +141,12 @@ namespace ImagePreprocessing
 
             if (isFind)
             {
-
                 Point start = new Point(startX, startY);
                 int startValue = segmentedImage[start.X, start.Y];
                 Point current;
 
-                int[] neighbX = { -1, 1, 0, 0, -1, 1, -1, 1 };
-                int[] neighbY = { 0, 0, -1, 1, -1, -1, 1, 1 };
+                int[] neighbX = {-1, 1, 0, 0, -1, 1, -1, 1};
+                int[] neighbY = {0, 0, -1, 1, -1, -1, 1, 1};
 
                 List<Point> points = new List<Point>();
 
@@ -137,11 +160,10 @@ namespace ImagePreprocessing
 
                     for (int i = 0; i < 8; i++)
                     {
-
                         Point p = new Point(current.X + neighbX[i], current.Y + neighbY[i]);
 
                         if ((p.X >= 0) && (p.X < IMAGE_WIDTH) && (p.Y >= 0) && (p.Y < IMAGE_HEIGHT)
-                                       && (segmentedImage[p.X, p.Y] == startValue))
+                            && (segmentedImage[p.X, p.Y] == startValue))
                             points.Add(p);
                     }
 
@@ -153,13 +175,12 @@ namespace ImagePreprocessing
                         if (segmentedImage[i, j] == label)
                             segmentedPoints++;
             }
-
         }
 
         // считает связные области (хз зачем, но пусть будет, может пригодится)
         private int countAreas()
         {
-            int[,] segmentedImage = (int[,])finalImage.Clone();
+            int[,] segmentedImage = (int[,]) finalImage.Clone();
 
             int label = 2;
 

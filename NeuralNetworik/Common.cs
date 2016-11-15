@@ -8,29 +8,29 @@ namespace NeuralNetworik
     {
         public static class Labels
         {
-            public static readonly int[] digit0 = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-            public static readonly int[] digit1 = {0, 1, 0, 0, 0, 0, 0, 0, 0, 0};
-            public static readonly int[] digit2 = {0, 0, 1, 0, 0, 0, 0, 0, 0, 0};
-            public static readonly int[] digit3 = {0, 0, 0, 1, 0, 0, 0, 0, 0, 0};
-            public static readonly int[] digit4 = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0};
-            public static readonly int[] digit5 = {0, 0, 0, 0, 0, 1, 0, 0, 0, 0};
-            public static readonly int[] digit6 = {0, 0, 0, 0, 0, 0, 1, 0, 0, 0};
-            public static readonly int[] digit7 = {0, 0, 0, 0, 0, 0, 0, 1, 0, 0};
-            public static readonly int[] digit8 = {0, 0, 0, 0, 0, 0, 0, 0, 1, 0};
-            public static readonly int[] digit9 = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+            private static readonly double[] Digit0 = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+            private static readonly double[] Digit1 = {0, 1, 0, 0, 0, 0, 0, 0, 0, 0};
+            private static readonly double[] Digit2 = {0, 0, 1, 0, 0, 0, 0, 0, 0, 0};
+            private static readonly double[] Digit3 = {0, 0, 0, 1, 0, 0, 0, 0, 0, 0};
+            private static readonly double[] Digit4 = {0, 0, 0, 0, 1, 0, 0, 0, 0, 0};
+            private static readonly double[] Digit5 = {0, 0, 0, 0, 0, 1, 0, 0, 0, 0};
+            private static readonly double[] Digit6 = {0, 0, 0, 0, 0, 0, 1, 0, 0, 0};
+            private static readonly double[] Digit7 = {0, 0, 0, 0, 0, 0, 0, 1, 0, 0};
+            private static readonly double[] Digit8 = {0, 0, 0, 0, 0, 0, 0, 0, 1, 0};
+            private static readonly double[] Digit9 = {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
 
-            public static Dictionary<int, int[]> LabelMapping = new Dictionary<int, int[]>()
+            public static Dictionary<int, double[]> LabelMapping = new Dictionary<int, double[]>()
             {
-                {0, digit0},
-                {1, digit1},
-                {2, digit2},
-                {3, digit3},
-                {4, digit4},
-                {5, digit5},
-                {6, digit6},
-                {7, digit7},
-                {8, digit8},
-                {9, digit9},
+                {0, Digit0},
+                {1, Digit1},
+                {2, Digit2},
+                {3, Digit3},
+                {4, Digit4},
+                {5, Digit5},
+                {6, Digit6},
+                {7, Digit7},
+                {8, Digit8},
+                {9, Digit9},
             };
         }
 

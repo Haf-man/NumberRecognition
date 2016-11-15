@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -24,46 +25,54 @@ namespace NeuralNetworik.NN
             double ratio;
             int iteration = 0;
             testObjects = testObjects.Take(20).ToList();
-            do
+
+            for (int i = 0; i < 20; ++i)
             {
-                Console.WriteLine($"Iteration {iteration++}");
-                int correct = 0;
-                // Training part
-                foreach (var trainingObject in trainingObjects)
+                Stopwatch stopwatch = Stopwatch.StartNew();
+                do
                 {
-                    NeuralNetwork.TrainNetwork(network, trainingObject, LearningRate, Momentum);
+                    Console.WriteLine($"Iteration {iteration++}");
+                    int correct = 0;
+                    // Training part
+                    foreach (var trainingObject in trainingObjects)
+                    {
+                        NeuralNetwork.TrainNetwork(network, trainingObject, LearningRate, Momentum);
 //                    NeuralNetwork.TrainNetwork(network, trainingObjects[0], LearningRate, Momentum);
 //                    if (network.ComputeResponse(trainingObjects[0].Input) == trainingObjects[0].Response)
-                    if (network.ComputeResponse(trainingObject.Input) == trainingObject.Response)
-                    {
-                        ++correct;
+                        if (network.ComputeResponse(trainingObject.Input) == trainingObject.Response)
+                        {
+                            ++correct;
+                        }
                     }
-                }
-                ratio = (double) correct / trainingObjects.Count * 100;
+                    ratio = (double) correct / trainingObjects.Count * 100;
 #if DEBUG
-                Console.WriteLine($"On training set: {ratio} %");
-#endif                
+                    Console.WriteLine($"On training set: {ratio} %");
+#endif
 
-                // Evaluation part
-                correct = 0;
-                foreach (var testObject in testObjects)
-                {
-                    // Check and sum
-                    if (network.ComputeResponse(testObject.Input) == testObject.Response)
+                    // Evaluation part
+                    correct = 0;
+                    foreach (var testObject in testObjects)
                     {
-                        ++correct;
+                        // Check and sum
+                        if (network.ComputeResponse(testObject.Input) == testObject.Response)
+                        {
+                            ++correct;
+                        }
                     }
-                }
 
-                // Ratio
-                ratio = (double)correct / testObjects.Count * 100;
+                    // Ratio
+                    ratio = (double) correct / testObjects.Count * 100;
 
 #if DEBUG
-                Console.WriteLine($"On test set: {ratio} %");
-#endif                
-            } while (iteration < 100);
+                    Console.WriteLine($"On test set: {ratio} %");
+#endif
+                } while (iteration < 100);
 
-            NeuralNetwork.SaveTo(network, "network.json");
+                stopwatch.Stop();
+                Console.WriteLine($"It took time {stopwatch.Elapsed} ms");
+
+                NeuralNetwork.SaveTo(network, $"network_{i}.json");
+            }
         }
     }
 }

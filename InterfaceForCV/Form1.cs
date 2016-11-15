@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Imaging;
+using System.Threading;
 using ImagePreprocessing;
 using NeuralNetworik.NN;
 using NumberRecognition;
@@ -129,8 +130,10 @@ namespace InterfaceForCV
             List<int> predictedInts = new List<int>();
             foreach (var v in digitImages)
             {
+                 
                 Preprocessing preprocessing = new Preprocessing(v, v.GetLength(0), v.GetLength(1));
                 var preprocessedImage = preprocessing.Preprocess();
+              
                 predictedInts.Add(_neuralNetwork.ComputeResponse(preprocessedImage));
             }
 

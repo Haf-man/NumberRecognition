@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,6 +18,9 @@ namespace ImagePreprocessing
         private int imageHeight;
         private int imageWidth;
 
+        private double stepX;
+        private double stepY;
+
         public int numAreas;
         private int segmentedPoints = 0;
 
@@ -33,8 +37,10 @@ namespace ImagePreprocessing
 
         public Preprocessing(int[,] _image, int _imageWidth, int _imageHeight)
         {
+            this.finalImage = new int[IMAGE_WIDTH, IMAGE_HEIGHT];
             this.numAreas = countAreas();
             this.image = _image;
+           
             this.imageHeight = _imageHeight;
             this.imageWidth = _imageWidth;
         }
@@ -47,13 +53,20 @@ namespace ImagePreprocessing
             return ToDoubles();
         }
 
+        public int[,] PreprocessTest()
+        {
+            Resize();
+            thickening();
+
+            return finalImage;
+        }
         private double[] ToDoubles()
         {
             var doubleImage = new double[IMAGE_HEIGHT*IMAGE_WIDTH];
 
-            for (int i = 0, cnt = 0; i < IMAGE_HEIGHT; ++i)
+            for (int i = 0, cnt = 0; i < IMAGE_WIDTH; ++i)
             {
-                for (int j = 0; j < IMAGE_WIDTH; ++j, ++cnt)
+                for (int j = 0; j < IMAGE_HEIGHT; ++j, ++cnt)
                 {
                     doubleImage[cnt] = finalImage[i, j];
                 }
@@ -65,17 +78,17 @@ namespace ImagePreprocessing
         // масштабирование
         private void Resize()
         {
-            double stepX = (double) IMAGE_HEIGHT / imageHeight;
-            double stepY = (double) IMAGE_WIDTH / imageWidth;
+            stepX = (double) IMAGE_HEIGHT / imageWidth;
+            stepY = (double) IMAGE_WIDTH / imageHeight;
 
             finalImage = new int[IMAGE_HEIGHT, IMAGE_WIDTH];
 
-            for (int i = 0; i < IMAGE_HEIGHT; i++)
-                for (int j = 0; j < IMAGE_WIDTH; j++)
-                    finalImage[i, j] = 0;
+            for (int i = 0; i < IMAGE_WIDTH; i++)
+                for (int j = 0; j < IMAGE_HEIGHT; j++)
+                    finalImage[i , j] = 0;
 
-            for (int i = 0; i < imageHeight; i++)
-                for (int j = 0; j < imageWidth; j++)
+            for (int i = 0; i < imageWidth; i++)
+                for (int j = 0; j < imageHeight; j++)
                     if (image[i, j] == 1)
                         finalImage[(int) (i * stepX), (int) (j * stepY)] = 1;
         }
@@ -95,9 +108,9 @@ namespace ImagePreprocessing
                 {
                     if (image[i, j] == 1)
                     {
-                        finalImage[i, j] = 1;
+                        finalImage[(int)(i * stepX), (int)(j * stepY)] = 1;
                         for (int k = 0; k < 8; k++)
-                            finalImage[i + dx[k], j + dy[k]] = 1;
+                            finalImage[(int) ((i + dx[k]) * stepX), (int) ((j + dy[k]) * stepY)] = 1;
                     }
                 }
 
@@ -108,7 +121,7 @@ namespace ImagePreprocessing
                     isAlone = true;
                     if (image[i, j] == 0)
                         for (int k = 0; k < 8; k++)
-                            if (finalImage[i + dx[k], j + dy[k]] == 0)
+                            if (finalImage[(int)((i + dx[k]) * stepX), (int)((j + dy[k]) * stepY)] == 0)
                             {
                                 isAlone = false;
                                 break;
@@ -126,9 +139,9 @@ namespace ImagePreprocessing
             bool isFind = false;
 
 
-            for (int i = 0; i < IMAGE_HEIGHT; i++)
+            for (int i = 0; i < IMAGE_WIDTH; i++)
             {
-                for (int j = 0; j < IMAGE_WIDTH; j++)
+                for (int j = 0; j < IMAGE_HEIGHT; j++)
                     if (segmentedImage[i, j] < 2)
                     {
                         startX = i;
@@ -170,8 +183,8 @@ namespace ImagePreprocessing
                     segmentedImage[current.X, current.Y] = label;
                 }
 
-                for (int i = 0; i < IMAGE_HEIGHT; i++)
-                    for (int j = 0; j < IMAGE_WIDTH; j++)
+                for (int i = 0; i < IMAGE_WIDTH; i++)
+                    for (int j = 0; j < IMAGE_HEIGHT; j++)
                         if (segmentedImage[i, j] == label)
                             segmentedPoints++;
             }

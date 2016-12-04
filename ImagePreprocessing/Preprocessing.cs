@@ -52,14 +52,28 @@ namespace ImagePreprocessing
 
             return ToDoubles();
         }
-
-        public int[,] PreprocessTest()
+        
+        public int[] PreprocessTest()
         {
             Resize();
             thickening();
 
-            return finalImage;
+            return toInts();
         }
+      private int[] toInts()
+    {
+      var intImage = new int[IMAGE_HEIGHT * IMAGE_WIDTH];
+
+      for (int i = 0, cnt = 0; i < IMAGE_WIDTH; ++i)
+      {
+        for (int j = 0; j < IMAGE_HEIGHT; ++j, ++cnt)
+        {
+          intImage[cnt] = finalImage[i, j];
+        }
+      }
+
+      return intImage;
+    }
         private double[] ToDoubles()
         {
             var doubleImage = new double[IMAGE_HEIGHT*IMAGE_WIDTH];

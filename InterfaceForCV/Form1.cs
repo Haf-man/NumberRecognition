@@ -23,6 +23,7 @@ namespace InterfaceForCV
         int widthOfLine;
         Bitmap tempImage;
         private NeuralNetwork _neuralNetwork;
+    //    private ImageDatabaseKeeper _database;
 
         public Form1()
         {
@@ -30,13 +31,14 @@ namespace InterfaceForCV
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             paint = false;
             widthOfLine = 10;
+          //  _database = new ImageDatabaseKeeper();
         }
 
         private void PaintingPanel_MouseDown(object sender, MouseEventArgs e)
         {
         }
-
-        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
+        
+    private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             Image image = pictureBox1.Image;
             tempImage = new Bitmap(image);
@@ -56,7 +58,7 @@ namespace InterfaceForCV
             pictureBox1.Invalidate();
             g.Dispose();
         }
-
+        
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             if (paint)
@@ -104,6 +106,7 @@ namespace InterfaceForCV
         {
             Image image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+     // _database.saveToFile();
             g = Graphics.FromImage(image);
             g.Clear(Color.White);
             g.Dispose();
@@ -132,9 +135,9 @@ namespace InterfaceForCV
             {
                  
                 Preprocessing preprocessing = new Preprocessing(v, v.GetLength(0), v.GetLength(1));
-                var preprocessedImage = preprocessing.Preprocess();
-              
-                predictedInts.Add(_neuralNetwork.ComputeResponse(preprocessedImage));
+      var preprocessedImage = preprocessing.Preprocess();
+      //  predictedInts.Add( _database.determinateDigit( preprocessing.PreprocessTest())); 
+             predictedInts.Add(_neuralNetwork.ComputeResponse(preprocessedImage));
             }
 
             outputLabel.Text = string.Join(" ", predictedInts);
@@ -226,5 +229,7 @@ namespace InterfaceForCV
 
             return convertedImage;
         }
-    }
+
+    
+  }
 }

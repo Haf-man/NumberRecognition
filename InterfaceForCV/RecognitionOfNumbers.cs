@@ -122,6 +122,7 @@ namespace InterfaceForCV
             }
             return freq;
         }
+        
         int recognizeDigit(int [,] image,int N,int M,int numOfClosedArea)
         {
             double freq = getStatistic(image,N, M);

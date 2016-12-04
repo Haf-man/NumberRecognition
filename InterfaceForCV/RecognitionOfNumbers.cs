@@ -39,7 +39,7 @@ namespace InterfaceForCV
             }
             return Math.Sqrt(sum);
         }
-        //
+        //выделить самое похожее число с данным количеством замкнутых областей
         int selectSelectedDigit(double [] freq,int [] possibleDigits,int N)
         {
             int resDig = possibleDigits[0];

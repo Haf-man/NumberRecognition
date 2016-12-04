@@ -15,7 +15,7 @@ namespace InterfaceForCV
             return numbers;
         }
         //эталонные значения частот
-        int [][] standardFrequance = 
+        double [][] standardFrequance = 
         {{0.25, 0.25, 0.25, 0.25},
          {0.2,  0.5,  0.3,  0},
          {0.2,  0.3,  0.19, 0.31},

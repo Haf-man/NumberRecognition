@@ -17,6 +17,8 @@ namespace InterfaceForCV
         static double [] getStatistic(int [,] image,int N,int M)
         {
             int [] partialCount = new int[4];
+            int ci = N%2;
+            int cj = M%2;
             for(int i = 0;i<N/2;++i)
             {
                 for(int j = 0;j<M/2;++j)
@@ -25,15 +27,15 @@ namespace InterfaceForCV
                     {
                         ++partialCount[0];
                     }
-                    if(image[i,j+M/2] == 1)
+                    if(image[i,j+M/2+cj] == 1)
                     {
                         ++partialCount[1];
                     }
-                    if(image[i+N/2,j+M/2] == 1)
+                    if(image[i+N/2+ci,j+M/2+cj] == 1)
                     {
                         ++partialCount[2];
                     }
-                    if(image[i+N/2,j] == 1)
+                    if(image[i+N/2+ci,j] == 1)
                     {
                         ++partialCount[3];
                     }

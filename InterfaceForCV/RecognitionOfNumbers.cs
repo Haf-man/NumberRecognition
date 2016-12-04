@@ -14,5 +14,42 @@ namespace InterfaceForCV
             int[] numbers = { 1, 2, 3 };
             return numbers;
         }
+        static double [] getStatistic(int [,] image,int N,int M)
+        {
+            int [] partialCount = new int[4];
+            for(int i = 0;i<N/2;++i)
+            {
+                for(int j = 0;j<M/2;++j)
+                {
+                    if(image[i,j] == 1)
+                    {
+                        ++partialCount[0];
+                    }
+                    if(image[i,j+M/2] == 1)
+                    {
+                        ++partialCount[1];
+                    }
+                    if(image[i+N/2,j+M/2] == 1)
+                    {
+                        ++partialCount[2];
+                    }
+                    if(image[i+N/2,j] == 1)
+                    {
+                        ++partialCount[3];
+                    }
+                }
+            }
+            int generalCount = 0;
+            for(int i = 0; i<4;++i)
+            {
+                generalCount += partialCount[i];
+            }
+            double [] freq = new double[4];
+            for(int i = 0; i<4;++i)
+            {
+                freq[i] = double(partialCount[i])/generalCount;
+            }
+            return freq;
+        }
     }
 }

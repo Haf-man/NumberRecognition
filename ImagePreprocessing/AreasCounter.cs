@@ -71,7 +71,7 @@ namespace ImagePreprocessing
                 List<Point> points = new List<Point>();
 
                 points.Add(start);
-
+        int max = points.Count();
                 while (points.Count() > 0)
                 {
                     current = new Point(points.Last().X, points.Last().Y);
@@ -82,18 +82,23 @@ namespace ImagePreprocessing
                     {
                         Point p = new Point(current.X + neighbX[i], current.Y + neighbY[i]);
 
-                        if ((p.X >= 0) && (p.X < imageWidth + 2) && (p.Y >= 0) && (p.Y < imageHeight + 2)
-                            && (segmentedImage[p.X, p.Y] == startValue))
-                            points.Add(p);
+            if ((p.X >= 0) && (p.X < imageWidth + 2) && (p.Y >= 0) && (p.Y < imageHeight + 2)
+                && (segmentedImage[p.X, p.Y] == startValue))
+            { points.Add(p);
+              segmentedImage[p.X, p.Y] = label;
+            }
                     }
 
                     segmentedImage[current.X, current.Y] = label;
+          if (points.Count > max)
+            max = points.Count;
                 }
 
                 for (int i = 0; i < imageWidth + 2; i++)
                     for (int j = 0; j < imageHeight + 2; j++)
                         if (segmentedImage[i, j] == label)
                             segmentedPoints++;
+        max = max + 1;
             }
         }
 

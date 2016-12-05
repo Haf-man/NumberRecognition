@@ -121,5 +121,13 @@ namespace NumberRecognition
             }
             return border;
         }
+      
+        private bool isHaveZeroBorder(int[,] map, Point point)
+        {
+      
+      return false;
+        }
+        
+        
     }
 }

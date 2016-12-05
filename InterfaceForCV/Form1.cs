@@ -138,18 +138,20 @@ namespace InterfaceForCV
       int k = 0;
             foreach (var v in digitImages)
             {
-                AreasCounter areasCounter = new AreasCounter(v, v.GetLength(0), v.GetLength(1));
-                int numberOfAreas = areasCounter.countAreas();                 
-                RecognitionOfNumbers recognizer = new RecognitionOfNumbers();
+              //  AreasCounter areasCounter = new AreasCounter(v, v.GetLength(0), v.GetLength(1));
+           //     int numberOfAreas = areasCounter.countAreas();
+      int numberOfAreas = countNumberOfAreas(v);
+        RecognitionOfNumbers recognizer = new RecognitionOfNumbers();
                 int resultDigit = recognizer.recognizeDigit(v, v.GetLength(0), v.GetLength(1), numberOfAreas);
                 predictedInts.Add(resultDigit);
                 drawResult(digits[k++].Item2.first, resultDigit);
-        
-              //  Preprocessing preprocessing = new Preprocessing(v, v.GetLength(0), v.GetLength(1));
-    //  var preprocessedImage = preprocessing.Preprocess();
-      //  predictedInts.Add( _database.determinateDigit( preprocessing.PreprocessTest())); 
-           //  predictedInts.Add(_neuralNetwork.ComputeResponse(preprocessedImage));
-            }
+
+       
+        //  Preprocessing preprocessing = new Preprocessing(v, v.GetLength(0), v.GetLength(1));
+        //  var preprocessedImage = preprocessing.Preprocess();
+        //  predictedInts.Add( _database.determinateDigit( preprocessing.PreprocessTest())); 
+        //  predictedInts.Add(_neuralNetwork.ComputeResponse(preprocessedImage));
+      }
 
             outputLabel.Text = string.Join(" ", predictedInts);
         }
@@ -252,7 +254,52 @@ namespace InterfaceForCV
 
             return convertedImage;
         }
+    private int countNumberOfAreas(int[,] image)
+    {
+      int imageWidth = image.GetLength(0);
+      int imageHeight = image.GetLength(1);
+      int[] dx = { -1, 0, 1, -1, 1, -1, 0, 1 };
+       int[] dy = { -1, -1, -1, 0, 0, 1, 1, 1 };
+    int numberOfAreas = 0;
+      int[,] tmpImage = new int[imageWidth+2,imageHeight+2];
+      
+      Array.Copy(image, tmpImage, imageWidth*imageHeight);
+     for( int i = 0;i < imageWidth+2; i++)
+        for(int j = 0; j< imageHeight+2; j++)
+        {
+          if (i != 0 && j != 0 && i != imageWidth + 1 && j != imageHeight + 1)
+            tmpImage[i, j] = image[i-1, j-1];
+          else
+            tmpImage[i, j] = 0;
+        }
+      for (int i = 0; i < tmpImage.GetLength(0); i++)
+        for (int j = 0; j < tmpImage.GetLength(1); j++)
+        {
+          if (tmpImage[i, j] == 0)
+          {
+             
+            Queue<Point> queue = new Queue<Point>();
+            queue.Enqueue(new Point(i, j));
+            while (queue.Count != 0)
+            {
+              
+              Point point = queue.Dequeue();
+              tmpImage[point.X, point.Y] = 2;
+              for (int k = 0; k < 8; k++)
+              {
+                if (point.X + dx[k] >= 0 && point.X + dx[k] < imageWidth+2 && point.Y + dy[k] >= 0 && point.Y + dy[k] < imageHeight+2)
+                  if (tmpImage[point.X + dx[k], point.Y + dy[k]] == 0)
+                  {
+                    queue.Enqueue(new Point(point.X + dx[k], point.Y + dy[k]));
+                    tmpImage[point.X+dx[k], point.Y+dy[k]] = 2;
+                  }
+              }
+            }
+            numberOfAreas++;
+          }
+        }
+      return numberOfAreas-1;
+    }
 
-   
   }
 }

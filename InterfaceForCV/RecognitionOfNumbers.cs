@@ -4,33 +4,106 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
+using System.IO;
 
 namespace InterfaceForCV
 {
-    static class RecognitionOfNumbers
+    public class RecognitionOfNumbers
     {
-        static public int [] Recognize(Image image)
+    private string _path = "distribution.in";
+    private List<int[]> distributions;
+    private int[] digitDistribution;
+    private int numberOfExamples;
+    public RecognitionOfNumbers()
+    {
+      distributions = new List<int[]>();
+      if (File.Exists(_path))
+      {
+
+        string[] database = File.ReadAllLines(_path);
+
+        foreach (var digitDescription in database)
+        {
+          int tmpResult = 0;
+          if (Int32.TryParse(digitDescription, out tmpResult))
+          {
+            numberOfExamples = tmpResult;
+            continue;
+          }
+          int[] distribution = new int[4];
+          string[] nums = digitDescription.Split(' ');
+          for (int i = 0; i < 4; i++)
+          {
+            distribution[i] = Convert.ToInt32(nums[i]);
+          }
+          distributions.Add(distribution);
+        }
+      }
+      else
+      {
+        throw new Exception("Can't find destribution file");
+      }
+
+    }
+
+    public void clarifyDistribution(int[] distribution, int digit)
+    {
+      int[] tmpDistribution = distributions.ElementAt(digit);
+      for (int i = 0; i < 4; i++)
+      {
+        tmpDistribution[i] = (numberOfExamples * tmpDistribution[i] + distribution[i]) / (numberOfExamples + 1);
+      }
+      distributions[digit] = tmpDistribution;
+      numberOfExamples++;
+    }
+    public void saveToFile()
+    {
+      using (StreamWriter sw = new StreamWriter(_path))
+      {
+        sw.WriteLine(numberOfExamples.ToString());
+        foreach (var distribution in distributions)
+        {
+          string savingString = "";
+
+          for (int i = 0; i < 4; i++)
+          {
+            savingString += distribution[i].ToString();
+            if (i != 3)
+              savingString += ' ';
+          }
+          sw.WriteLine(savingString);
+        }
+
+      }
+    }
+    public void convertDistributionToDouble()
+    {
+      for (int i = 0; i < 10; i++)
+        for (int j = 0; j < 4; j++)
+          standardFrequance[i][j] = (double)(distributions[i][j])/100;
+    }
+    public int [] Recognize(Image image)
         {
             int[] numbers = { 1, 2, 3 };
             return numbers;
         }
         //эталонные значения частот
-        double [][] standardFrequance = 
-        {{0.25, 0.25, 0.25, 0.25},
-         {0.2,  0.5,  0.3,  0},
-         {0.2,  0.3,  0.19, 0.31},
-         {0.15, 0.35, 0.35, 0.15},
-         {0.33, 0.33, 0.33, 0},
-         {0.36, 0.15, 0.35, 0.14},
-         {0.29, 0.12, 0.29, 0.3},
-         {0.19, 0.49, 0.02, 0.3},
-         {0.25, 0.25, 0.25, 0.25},
-         {0.29, 0.3,  0.29, 0.12},
+        private double[][] standardFrequance = 
+        {new double[]{0.25, 0.25, 0.25, 0.25},
+         new double[]{0.2,  0.5,  0.3,  0},
+         new double[]{0.2,  0.3,  0.19, 0.31},
+         new double[]{0.15, 0.35, 0.35, 0.15},
+         new double[]{0.33, 0.33, 0.33, 0},
+         new double[]{0.36, 0.15, 0.35, 0.14},
+         new double[]{0.29, 0.12, 0.29, 0.3},
+         new double[]{0.19, 0.49, 0.02, 0.3},
+         new double[]{0.25, 0.25, 0.25, 0.25},
+         new double[]{0.29, 0.3,  0.29, 0.12},
         };
         int [] oneClosedArea = {0, 6, 9};
         int [] noClosedArea = {1,2,3,4,5,7};
-        //евклидова метрика
-        double distance(double [] x,double [] y, int N)
+    //евклидова метрика
+    private double distance(double [] x,double [] y, int N)
         {
             double sum = 0;
             for(int i = 0;i<N;++i)
@@ -39,8 +112,8 @@ namespace InterfaceForCV
             }
             return Math.Sqrt(sum);
         }
-        //выделить самое похожее число с данным количеством замкнутых областей
-        int selectSelectedDigit(double [] freq,int [] possibleDigits,int N)
+    //выделить самое похожее число с данным количеством замкнутых областей
+    private int selectSelectedDigit(double [] freq,int [] possibleDigits,int N)
         {
             int resDig = possibleDigits[0];
             double minDist = distance(freq,standardFrequance[resDig],4);
@@ -56,8 +129,8 @@ namespace InterfaceForCV
             }
             return resDig;
         }
-        //наиболее похожая цифра
-        int selectDigit(double [] freq,int numOfClosedArea)
+    //наиболее похожая цифра
+    private int selectDigit(double [] freq,int numOfClosedArea)
         {
             int res = -1;
             if(numOfClosedArea == 2)
@@ -82,7 +155,7 @@ namespace InterfaceForCV
         }
         
         //вычисление относительных частот
-        static double [] getStatistic(int [,] image,int N,int M)
+        private double [] getStatistic(int [,] image,int N,int M)
         {
             int [] partialCount = new int[4];
             //константы для корректировки в случае нечетного количества пикселей
@@ -118,14 +191,14 @@ namespace InterfaceForCV
             double [] freq = new double[4];
             for(int i = 0; i<4;++i)
             {
-                freq[i] = double(partialCount[i])/generalCount;
+                freq[i] = (double)(partialCount[i])/generalCount;
             }
             return freq;
         }
-        
-        int recognizeDigit(int [,] image,int N,int M,int numOfClosedArea)
+
+    public int recognizeDigit(int [,] image,int N,int M,int numOfClosedArea)
         {
-            double freq = getStatistic(image,N, M);
+            double [] freq = getStatistic(image,N, M);
             int res = selectDigit(freq, numOfClosedArea);
             return res;
         }

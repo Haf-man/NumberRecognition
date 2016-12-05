@@ -133,11 +133,14 @@ namespace InterfaceForCV
             List<int> predictedInts = new List<int>();
             foreach (var v in digitImages)
             {
-                 
-                Preprocessing preprocessing = new Preprocessing(v, v.GetLength(0), v.GetLength(1));
-      var preprocessedImage = preprocessing.Preprocess();
+                AreasCounter areasCounter = new AreasCounter(v, v.GetLength(0), v.GetLength(1));
+                int numberOfAreas = areasCounter.countAreas();
+                RecognitionOfNumbers recognizer = new RecognitionOfNumbers();
+                predictedInts.Add(recognizer.recognizeDigit(v, v.GetLength(0), v.GetLength(1), numberOfAreas));
+              //  Preprocessing preprocessing = new Preprocessing(v, v.GetLength(0), v.GetLength(1));
+    //  var preprocessedImage = preprocessing.Preprocess();
       //  predictedInts.Add( _database.determinateDigit( preprocessing.PreprocessTest())); 
-             predictedInts.Add(_neuralNetwork.ComputeResponse(preprocessedImage));
+           //  predictedInts.Add(_neuralNetwork.ComputeResponse(preprocessedImage));
             }
 
             outputLabel.Text = string.Join(" ", predictedInts);

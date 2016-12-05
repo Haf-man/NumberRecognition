@@ -101,6 +101,11 @@ namespace NeuralNetworik.NN
 }
         }
 
+        public double[] ComputeResonses(double[] input)
+        {
+            return ComputeOutput(input).Select(x => x.Response).ToArray();
+        }
+
         public double ComputeBinaryResponse(double[] input)
         {
             Node output = ComputeOutput(input)[0];

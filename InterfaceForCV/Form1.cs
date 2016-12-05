@@ -24,7 +24,7 @@ namespace InterfaceForCV
         int widthOfLine;
         Bitmap tempImage;
         private NeuralNetwork _neuralNetwork;
-    //    private ImageDatabaseKeeper _database;
+        //    private ImageDatabaseKeeper _database;
 
         public Form1()
         {
@@ -32,14 +32,14 @@ namespace InterfaceForCV
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             paint = false;
             widthOfLine = 10;
-          //  _database = new ImageDatabaseKeeper();
+            //  _database = new ImageDatabaseKeeper();
         }
 
         private void PaintingPanel_MouseDown(object sender, MouseEventArgs e)
         {
         }
-        
-    private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
+
+        private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             Image image = pictureBox1.Image;
             tempImage = new Bitmap(image);
@@ -59,7 +59,7 @@ namespace InterfaceForCV
             pictureBox1.Invalidate();
             g.Dispose();
         }
-        
+
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
             if (paint)
@@ -107,7 +107,7 @@ namespace InterfaceForCV
         {
             Image image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Image = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-     // _database.saveToFile();
+            // _database.saveToFile();
             g = Graphics.FromImage(image);
             g.Clear(Color.White);
             g.Dispose();
@@ -124,50 +124,123 @@ namespace InterfaceForCV
             List<Tuple<int[,], Pair<Point>>> digits = converter.Convert();
             List<int[,]> digitImages = new List<int[,]>();
             List<Pair<Point>> digitBorders = new List<Pair<Point>>();
-           
+
             foreach (var v in digits)
             {
-
                 digitImages.Add(v.Item1);
                 digitBorders.Add(v.Item2);
                 drawBorder(v.Item2);
-                 
             }
 
             List<int> predictedInts = new List<int>();
-      int k = 0;
+            int k = 0;
             foreach (var v in digitImages)
             {
-              //  AreasCounter areasCounter = new AreasCounter(v, v.GetLength(0), v.GetLength(1));
-           //     int numberOfAreas = areasCounter.countAreas();
-      int numberOfAreas = countNumberOfAreas(v);
-        RecognitionOfNumbers recognizer = new RecognitionOfNumbers();
+                //  AreasCounter areasCounter = new AreasCounter(v, v.GetLength(0), v.GetLength(1));
+                //     int numberOfAreas = areasCounter.countAreas();
+                int numberOfAreas = countNumberOfAreas(v);
+                RecognitionOfNumbers recognizer = new RecognitionOfNumbers();
                 int resultDigit = recognizer.recognizeDigit(v, v.GetLength(0), v.GetLength(1), numberOfAreas);
                 predictedInts.Add(resultDigit);
-                drawResult(digits[k++].Item2.first, resultDigit);
-        double[] probabilities = recognizer.computeProbabilities(v, v.GetLength(0), v.GetLength(1), numberOfAreas);
-       
-        //  Preprocessing preprocessing = new Preprocessing(v, v.GetLength(0), v.GetLength(1));
-        //  var preprocessedImage = preprocessing.Preprocess();
-        //  predictedInts.Add( _database.determinateDigit( preprocessing.PreprocessTest())); 
-        //  predictedInts.Add(_neuralNetwork.ComputeResponse(preprocessedImage));
-      }
+                double[] probabilities = recognizer.computeProbabilities(v, v.GetLength(0), v.GetLength(1), numberOfAreas);
+
+#if DEBUG
+                for (int i = 0; i < v.GetLength(0); ++i)
+                {
+                    for (int j = 0; j < v.GetLength(1); ++j)
+                    {
+                        Console.Write(v[i,j]);        
+                    }
+                    Console.WriteLine();
+                }
+                Console.WriteLine(new string('=', 50));
+#endif
+
+                Preprocessing preprocessing = new Preprocessing(v, v.GetLength(0), v.GetLength(1));
+                var preprocessedImage = preprocessing.Preprocess();
+
+                double[] correctImage = new double[1024];
+                for (int i = 0; i < 32; ++i)
+                {
+                    for (int j = 0; j < 32; ++j)
+                    {
+                        correctImage[i * 32 + j] = preprocessedImage[i + 32 * j];
+                    }
+                }
+
+                preprocessedImage = correctImage;
+//                for (int i = 0; i < 32/2; ++i)
+//                {
+//                    for (int j = 0; j < 32; ++j)
+//                    {
+//                        double temp = preprocessedImage[i*32 + j];
+//                        preprocessedImage[i*32 + j] = preprocessedImage[(32 - i - 1) * 32 + j];
+//                        preprocessedImage[(32 - i - 1)*32 + j] = temp;
+//                    }
+//                }
+
+
+                double[] responses = _neuralNetwork.ComputeResonses(preprocessedImage);
+                int label = -1; double max = -1;
+                for (int i = 0; i < 10; ++i)
+                {
+                    if (probabilities[i] + responses[i] > max)
+                    {
+                        max = probabilities[i] + responses[i];
+                        label = i;
+                    }
+                }
+
+                drawResult(digits[k++].Item2.first, digits[k - 1].Item2.second, resultDigit, label);
+                if (resultDigit == 0 || resultDigit == 6 || resultDigit == 8 || resultDigit == 9)
+                {
+                    drawResult(digits[k - 1].Item2.first, resultDigit);
+                }
+                else
+                {
+                    drawResult(digits[k - 1].Item2.first, label);
+                }
+
+                //  predictedInts.Add( _database.determinateDigit( preprocessing.PreprocessTest())); 
+                predictedInts.Add(label);
+            }
 
             outputLabel.Text = string.Join(" ", predictedInts);
         }
-      private void drawResult(Point point, int digit)
-    {
-      paint = true;
-      Image image = pictureBox1.Image;
-      tempImage = new Bitmap(image);
-      g = Graphics.FromImage(tempImage);
-      Font drawFont = new Font("Arial", 16);
-      g.DrawString(digit.ToString(), drawFont, Brushes.Black, new Point(point.X - 10, point.Y - 10));
-      paint = false;
-      pictureBox1.Image = tempImage;
-      pictureBox1.Invalidate();
-      g.Dispose();
-    }
+
+        private void drawResult(Point first, Point second, int digit, int label)
+        {
+            paint = true;
+
+            Image image = pictureBox1.Image;
+            tempImage = new Bitmap(image);
+            g = Graphics.FromImage(tempImage);
+            Font drawFont = new Font("Arial", 16);
+            g.DrawString(digit.ToString(), drawFont, Brushes.Black, new Point(first.X - 10, second.Y - 10));
+            g.DrawString(label.ToString(), drawFont, Brushes.Black, new Point(second.X - 10, second.Y - 10));
+            paint = false;
+            pictureBox1.Image = tempImage;
+            pictureBox1.Invalidate();
+
+            g.Dispose();
+        }
+
+        private void drawResult(Point point, int digit)
+        {
+            paint = true;
+
+            Image image = pictureBox1.Image;
+            tempImage = new Bitmap(image);
+            g = Graphics.FromImage(tempImage);
+            Font drawFont = new Font("Arial", 16);
+            g.DrawString(digit.ToString(), drawFont, Brushes.Black, new Point(point.X - 10, point.Y - 10));
+            paint = false;
+            pictureBox1.Image = tempImage;
+            pictureBox1.Invalidate();
+
+            g.Dispose();
+        }
+
         private void drawBorder(Pair<Point> border)
         {
             paint = true;
@@ -179,7 +252,7 @@ namespace InterfaceForCV
             g.DrawLine(pen, border.first, new Point(border.second.X, border.first.Y));
             g.DrawLine(pen, new Point(border.first.X, border.second.Y), border.second);
             g.DrawLine(pen, new Point(border.second.X, border.first.Y), border.second);
-    
+
             paint = false;
 
             pictureBox1.Image = tempImage;
@@ -189,7 +262,7 @@ namespace InterfaceForCV
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            _neuralNetwork = NeuralNetwork.ReadFrom("network.json");
+            _neuralNetwork = NeuralNetwork.ReadFrom("new_network_1.json");
         }
 
         private Bitmap ConvertImageToBitmap(int[,] image)
@@ -254,52 +327,51 @@ namespace InterfaceForCV
 
             return convertedImage;
         }
-    private int countNumberOfAreas(int[,] image)
-    {
-      int imageWidth = image.GetLength(0);
-      int imageHeight = image.GetLength(1);
-      int[] dx = { -1, 0, 1, -1, 1, -1, 0, 1 };
-       int[] dy = { -1, -1, -1, 0, 0, 1, 1, 1 };
-    int numberOfAreas = 0;
-      int[,] tmpImage = new int[imageWidth+2,imageHeight+2];
-      
-      Array.Copy(image, tmpImage, imageWidth*imageHeight);
-     for( int i = 0;i < imageWidth+2; i++)
-        for(int j = 0; j< imageHeight+2; j++)
-        {
-          if (i != 0 && j != 0 && i != imageWidth + 1 && j != imageHeight + 1)
-            tmpImage[i, j] = image[i-1, j-1];
-          else
-            tmpImage[i, j] = 0;
-        }
-      for (int i = 0; i < tmpImage.GetLength(0); i++)
-        for (int j = 0; j < tmpImage.GetLength(1); j++)
-        {
-          if (tmpImage[i, j] == 0)
-          {
-             
-            Queue<Point> queue = new Queue<Point>();
-            queue.Enqueue(new Point(i, j));
-            while (queue.Count != 0)
-            {
-              
-              Point point = queue.Dequeue();
-              tmpImage[point.X, point.Y] = 2;
-              for (int k = 0; k < 8; k++)
-              {
-                if (point.X + dx[k] >= 0 && point.X + dx[k] < imageWidth+2 && point.Y + dy[k] >= 0 && point.Y + dy[k] < imageHeight+2)
-                  if (tmpImage[point.X + dx[k], point.Y + dy[k]] == 0)
-                  {
-                    queue.Enqueue(new Point(point.X + dx[k], point.Y + dy[k]));
-                    tmpImage[point.X+dx[k], point.Y+dy[k]] = 2;
-                  }
-              }
-            }
-            numberOfAreas++;
-          }
-        }
-      return numberOfAreas-1;
-    }
 
-  }
+        private int countNumberOfAreas(int[,] image)
+        {
+            int imageWidth = image.GetLength(0);
+            int imageHeight = image.GetLength(1);
+            int[] dx = {-1, 0, 1, -1, 1, -1, 0, 1};
+            int[] dy = {-1, -1, -1, 0, 0, 1, 1, 1};
+            int numberOfAreas = 0;
+            int[,] tmpImage = new int[imageWidth + 2, imageHeight + 2];
+
+            Array.Copy(image, tmpImage, imageWidth * imageHeight);
+            for (int i = 0; i < imageWidth + 2; i++)
+                for (int j = 0; j < imageHeight + 2; j++)
+                {
+                    if (i != 0 && j != 0 && i != imageWidth + 1 && j != imageHeight + 1)
+                        tmpImage[i, j] = image[i - 1, j - 1];
+                    else
+                        tmpImage[i, j] = 0;
+                }
+            for (int i = 0; i < tmpImage.GetLength(0); i++)
+                for (int j = 0; j < tmpImage.GetLength(1); j++)
+                {
+                    if (tmpImage[i, j] == 0)
+                    {
+                        Queue<Point> queue = new Queue<Point>();
+                        queue.Enqueue(new Point(i, j));
+                        while (queue.Count != 0)
+                        {
+                            Point point = queue.Dequeue();
+                            tmpImage[point.X, point.Y] = 2;
+                            for (int k = 0; k < 8; k++)
+                            {
+                                if (point.X + dx[k] >= 0 && point.X + dx[k] < imageWidth + 2 && point.Y + dy[k] >= 0 &&
+                                    point.Y + dy[k] < imageHeight + 2)
+                                    if (tmpImage[point.X + dx[k], point.Y + dy[k]] == 0)
+                                    {
+                                        queue.Enqueue(new Point(point.X + dx[k], point.Y + dy[k]));
+                                        tmpImage[point.X + dx[k], point.Y + dy[k]] = 2;
+                                    }
+                            }
+                        }
+                        numberOfAreas++;
+                    }
+                }
+            return numberOfAreas - 1;
+        }
+    }
 }

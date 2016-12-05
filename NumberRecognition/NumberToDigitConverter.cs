@@ -48,7 +48,7 @@ namespace NumberRecognition
                     if (image[i, j] == 1)
                     {
                         Pair<Point> findedBorder = findDigit(i, j, border);
-                        digitImages.Add(new Tuple<int[,], Pair<Point>>(createDigitImage(findedBorder), findedBorder));
+                        digitImages.Add(new Tuple<int[,], Pair<Point>>(ExtendToSquare(createDigitImage(findedBorder)), findedBorder));
                     }
             return digitImages;
         }
@@ -64,6 +64,55 @@ namespace NumberRecognition
                 }
 
             return digitImage;
+        }
+
+        private int[,] ExtendToSquare(int[,] image)
+        {
+            int sideSize = Math.Max(image.GetLength(0), image.GetLength(1));
+
+            var squaredImage = new int[sideSize, sideSize];
+
+            int difference;
+            if (image.GetLength(0) < sideSize)
+            {
+                difference = sideSize - image.GetLength(0);
+                int halfDifference = (int)Math.Ceiling((0.0 + difference) / 2);
+                for (int i = 0; i < sideSize; ++i)
+                {
+                    for (int j = 0; j < sideSize; ++j)
+                    {
+                        if (i >= halfDifference && i < sideSize - halfDifference)
+                        {
+                            squaredImage[i, j] = image[i - halfDifference, j];
+                        }
+                        else
+                        {
+                            squaredImage[i, j] = 0;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                difference = sideSize - image.GetLength(1);
+                int halfDifference = (int)Math.Ceiling((0.0 + difference) / 2);
+                for (int i = 0; i < sideSize; ++i)
+                {
+                    for (int j = 0; j < sideSize; ++j)
+                    {
+                        if (j >= halfDifference && j < sideSize - halfDifference)
+                        {
+                            squaredImage[i, j] = image[i, j - halfDifference];
+                        }
+                        else
+                        {
+                            squaredImage[i, j] = 0;
+                        }
+                    }
+                }
+            }
+
+            return squaredImage;
         }
 
         private Pair<Point> compare(Pair<Point> pair, Point point)

@@ -130,6 +130,29 @@ namespace InterfaceForCV
             }
             return resDig;
         }
+    private double[] computeDigitProbability(double[] freq, int[] possibleDigits, int N)
+    {
+      double[] probabilities = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+      double  totalProbability = 0.0;
+      for (int i = 0; i < N; ++i)
+      {         
+        double distanceFromIdeal = distance(freq, standardFrequance[possibleDigits[i]], 4);
+        probabilities[possibleDigits[i]] = distanceFromIdeal;
+        totalProbability += distanceFromIdeal;
+      }
+      for (int i = 0; i < N; ++i)
+      {
+        probabilities[possibleDigits[i]] /= totalProbability;
+      }
+      for (int i = 0; i < 10; ++i)
+      {
+        if(probabilities[i]!=0.0)
+        probabilities[i] = 1 - probabilities[i];
+      }
+
+
+      return probabilities;
+    }
     //наиболее похожая цифра
     private int selectDigit(double [] freq,int numOfClosedArea)
         {
@@ -196,7 +219,33 @@ namespace InterfaceForCV
             }
             return freq;
         }
+    
+    public double[] computeProbabilities(int[,] image, int width, int height, int numOfClosedArea)
+    {
+      double[] probabilities = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 
+      double[] freq = getStatistic(image, width, height);
+
+      if (numOfClosedArea == 2)
+      {
+        return new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
+      }
+      else
+      {
+        if (numOfClosedArea == 1)
+        {
+          return computeDigitProbability(freq, oneClosedArea, 3);
+        }
+        else
+        {
+          if (numOfClosedArea == 0)
+          {
+            return computeDigitProbability(freq, noClosedArea, 6);
+          }
+        }
+      }
+      return probabilities;
+    }
     public int recognizeDigit(int [,] image,int N,int M,int numOfClosedArea)
         {
             double [] freq = getStatistic(image,N, M);

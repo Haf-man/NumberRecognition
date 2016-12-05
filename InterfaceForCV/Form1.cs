@@ -145,7 +145,7 @@ namespace InterfaceForCV
                 int resultDigit = recognizer.recognizeDigit(v, v.GetLength(0), v.GetLength(1), numberOfAreas);
                 predictedInts.Add(resultDigit);
                 drawResult(digits[k++].Item2.first, resultDigit);
-
+        double[] probabilities = recognizer.computeProbabilities(v, v.GetLength(0), v.GetLength(1), numberOfAreas);
        
         //  Preprocessing preprocessing = new Preprocessing(v, v.GetLength(0), v.GetLength(1));
         //  var preprocessedImage = preprocessing.Preprocess();

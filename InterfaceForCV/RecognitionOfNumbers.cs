@@ -172,7 +172,7 @@ namespace InterfaceForCV
                     }
                     if(image[i,j+M/2+cj] == 1)
                     {
-                        ++partialCount[1];
+                        ++partialCount[3];
                     }
                     if(image[i+N/2+ci,j+M/2+cj] == 1)
                     {
@@ -180,7 +180,7 @@ namespace InterfaceForCV
                     }
                     if(image[i+N/2+ci,j] == 1)
                     {
-                        ++partialCount[3];
+                        ++partialCount[1];
                     }
                 }
             }

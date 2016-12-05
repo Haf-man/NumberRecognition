@@ -126,7 +126,8 @@
       ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
       ((System.ComponentModel.ISupportInitialize)(this.eventLog1)).EndInit();
       this.ResumeLayout(false);
-      this.PerformLayout(); 
+      this.PerformLayout();
+
     }
 
         #endregion

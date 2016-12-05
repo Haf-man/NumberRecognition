@@ -253,6 +253,6 @@ namespace InterfaceForCV
             return convertedImage;
         }
 
-    
+   
   }
 }

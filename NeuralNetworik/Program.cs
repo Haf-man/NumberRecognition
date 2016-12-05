@@ -15,7 +15,8 @@ namespace NeuralNetworik
         {
 //            Tests.TestFileUtils();
 //            Tests.TestTrainingXor();
-            Tests.TestTrainingDigits();
+//            Tests.TestTrainingDigits();
+            Tests.TestNetwork();
         }
 
         static class Tests
@@ -64,6 +65,34 @@ namespace NeuralNetworik
                 };
 
                 training.TrainNetwork(ref network, trainingSet, testSet);
+            }
+
+            public static void TestNetwork()
+            {
+                var network = NeuralNetwork.ReadFrom("new_network_1.json");
+                var dataSet = FileUtils.LoadDataSet(Properties.Resources.optdigits_tra);
+
+                int cnt = 0;
+                Dictionary<int, int> rightCount = new Dictionary<int, int>();
+                for (int i = 0; i < 10; i++)
+                {
+                    rightCount[i] = 0;
+                }
+                foreach (var trainingEntry in dataSet)
+                {
+                    int response = network.ComputeResponse(trainingEntry.Input);
+                    Console.WriteLine($"actual {response} - desired {trainingEntry.Response}");
+                    if (response == trainingEntry.Response)
+                    {
+                        cnt++;
+                        rightCount[response] = rightCount[response]+1;
+                    }
+                }
+                Console.WriteLine($"{cnt} / {dataSet.Count} == {100.0 * cnt / dataSet.Count}");
+                foreach (var pair in rightCount)
+                {
+                    Console.WriteLine($"{pair.Key} : {pair.Value}");
+                }
             }
         }
     }

@@ -26,7 +26,7 @@ namespace NeuralNetworik.NN
             int iteration = 0;
             testObjects = testObjects.Take(20).ToList();
 
-            for (int i = 0; i < 20; ++i)
+            for (int i = 0; i < 2; ++i)
             {
                 Stopwatch stopwatch = Stopwatch.StartNew();
                 do
@@ -45,10 +45,10 @@ namespace NeuralNetworik.NN
                         }
                     }
                     ratio = (double) correct / trainingObjects.Count * 100;
-#if DEBUG
-                    Console.WriteLine($"On training set: {ratio} %");
-#endif
 
+                    Console.WriteLine($"On training set: {ratio} %");
+
+/*
                     // Evaluation part
                     correct = 0;
                     foreach (var testObject in testObjects)
@@ -63,15 +63,16 @@ namespace NeuralNetworik.NN
                     // Ratio
                     ratio = (double) correct / testObjects.Count * 100;
 
-#if DEBUG
                     Console.WriteLine($"On test set: {ratio} %");
-#endif
+*/
                 } while (iteration < 100);
 
                 stopwatch.Stop();
                 Console.WriteLine($"It took time {stopwatch.Elapsed} ms");
 
-                NeuralNetwork.SaveTo(network, $"network_{i}.json");
+                NeuralNetwork.SaveTo(network, $"new_network_{i}.json");
+
+                Console.WriteLine("Saved");
             }
         }
     }

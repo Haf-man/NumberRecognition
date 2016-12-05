@@ -32,10 +32,6 @@ namespace InterfaceForCV
             widthOfLine = 10;
         }
 
-        private void PaintingPanel_MouseDown(object sender, MouseEventArgs e)
-        {
-        }
-
         private void pictureBox1_MouseDown(object sender, MouseEventArgs e)
         {
             Image image = pictureBox1.Image;
@@ -119,9 +115,25 @@ namespace InterfaceForCV
             NumberToDigitConverter converter = new NumberToDigitConverter(image, image.GetLength(0), image.GetLength(1));
             List<Tuple<int[,], Pair<Point>>> digits = converter.Convert();
             List<int[,]> digitImages = new List<int[,]>();
+
             List<Pair<Point>> digitBorders = new List<Pair<Point>>();
             foreach (var v in digits)
             {
+#if DEBUG
+                int height = v.Item1.GetLength(0);
+                int width = v.Item1.GetLength(1);
+                for (int i = 0; i < height; ++i)
+                {
+                    for (int j = 0; j < width; ++j)
+                    {
+                        Console.Write(v.Item1[i,j]);
+                    }
+                    Console.WriteLine();
+                }
+                Console.WriteLine(new String('-', 50));
+#endif
+
+
                 digitImages.Add(v.Item1);
                 digitBorders.Add(v.Item2);
                 drawBorder(v.Item2);
@@ -133,6 +145,8 @@ namespace InterfaceForCV
                  
                 Preprocessing preprocessing = new Preprocessing(v, v.GetLength(0), v.GetLength(1));
                 var preprocessedImage = preprocessing.Preprocess();
+
+                
               
                 predictedInts.Add(_neuralNetwork.ComputeResponse(preprocessedImage));
             }
@@ -146,33 +160,38 @@ namespace InterfaceForCV
             Image image = pictureBox1.Image;
             tempImage = new Bitmap(image);
             g = Graphics.FromImage(tempImage);
+
             Pen pen = new Pen(Brushes.Black, widthOfLine - 9);
-            g.DrawLine(pen, border.first, new Point(border.first.X, border.second.Y));
-            g.DrawLine(pen, border.first, new Point(border.second.X, border.first.Y));
-            g.DrawLine(pen, new Point(border.first.X, border.second.Y), border.second);
-            g.DrawLine(pen, new Point(border.second.X, border.first.Y), border.second);
+
+
+            var minPoint = new Point(Math.Min(border.first.Y, border.second.Y), Math.Min(border.first.X, border.second.X));
+            var maxPoint = new Point(Math.Max(border.first.Y, border.second.Y), Math.Max(border.first.X, border.second.X));
+            Rectangle rectangle = new Rectangle(minPoint, new Size(maxPoint.X - minPoint.X, maxPoint.Y - minPoint.Y));
+
+            g.DrawRectangle(pen, rectangle);
 
             paint = false;
 
             pictureBox1.Image = tempImage;
             pictureBox1.Invalidate();
             g.Dispose();
+
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            _neuralNetwork = NeuralNetwork.ReadFrom("network.json");
+            _neuralNetwork = NeuralNetwork.ReadFrom("new_network_1.json");
         }
 
         private Bitmap ConvertImageToBitmap(int[,] image)
         {
-            int height = image.GetLength(1);
-            int width = image.GetLength(0);
-            Bitmap bitmap = new Bitmap(width, height);
+            int height = image.GetLength(0);
+            int width = image.GetLength(1);
+            Bitmap bitmap = new Bitmap(height, width);
             {
-                for (int i = 0; i < width; ++i)
+                for (int i = 0; i < height; ++i)
                 {
-                    for (int j = 0; j < height; ++j)
+                    for (int j = 0; j < width; ++j)
                     {
                         bitmap.SetPixel(i, j, Convert.ToBoolean(image[i, j]) ? Color.Red : Color.DarkRed);
                     }
@@ -183,7 +202,7 @@ namespace InterfaceForCV
 
         private int[,] ConvertImage(Image image)
         {
-            int[,] convertedImage = new int[image.Width, image.Height];
+            int[,] convertedImage = new int[image.Height, image.Width];
             Color cc = BackColor;
             List<Color> colors = new List<Color>();
             bool flag = true;
@@ -192,18 +211,18 @@ namespace InterfaceForCV
                 int height = bitmap.Height;
                 int width = bitmap.Width;
 
-                for (int i = 0; i < width; ++i)
+                for (int i = 0; i < height; ++i)
                 {
-                    for (int j = 0; j < height; ++j)
+                    for (int j = 0; j < width; ++j)
                     {
                         //   convertedImage[i, j] = bitmap.GetPixel(j, i) == cc ? 0 : 1;
 
-                        if (flag)
-                        {
-                            cc = bitmap.GetPixel(i, j);
-                            flag = false;
-                        }
-                        Color c = bitmap.GetPixel(i, j);
+//                        if (flag)
+//                        {
+//                            cc = bitmap.GetPixel(i, j);
+//                            flag = false;
+//                        }
+                        Color c = bitmap.GetPixel(j, i);
                         if (!colors.Contains(c))
                             colors.Add(c);
                         if (colors.FindIndex(x => x == c) == 0)

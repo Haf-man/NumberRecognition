@@ -124,20 +124,27 @@ namespace InterfaceForCV
             List<Tuple<int[,], Pair<Point>>> digits = converter.Convert();
             List<int[,]> digitImages = new List<int[,]>();
             List<Pair<Point>> digitBorders = new List<Pair<Point>>();
+           
             foreach (var v in digits)
             {
+
                 digitImages.Add(v.Item1);
                 digitBorders.Add(v.Item2);
                 drawBorder(v.Item2);
+                 
             }
 
             List<int> predictedInts = new List<int>();
+      int k = 0;
             foreach (var v in digitImages)
             {
                 AreasCounter areasCounter = new AreasCounter(v, v.GetLength(0), v.GetLength(1));
                 int numberOfAreas = areasCounter.countAreas();                 
                 RecognitionOfNumbers recognizer = new RecognitionOfNumbers();
-                predictedInts.Add(recognizer.recognizeDigit(v, v.GetLength(0), v.GetLength(1), numberOfAreas));
+                int resultDigit = recognizer.recognizeDigit(v, v.GetLength(0), v.GetLength(1), numberOfAreas);
+                predictedInts.Add(resultDigit);
+                drawResult(digits[k++].Item2.first, resultDigit);
+        
               //  Preprocessing preprocessing = new Preprocessing(v, v.GetLength(0), v.GetLength(1));
     //  var preprocessedImage = preprocessing.Preprocess();
       //  predictedInts.Add( _database.determinateDigit( preprocessing.PreprocessTest())); 
@@ -146,7 +153,19 @@ namespace InterfaceForCV
 
             outputLabel.Text = string.Join(" ", predictedInts);
         }
-
+      private void drawResult(Point point, int digit)
+    {
+      paint = true;
+      Image image = pictureBox1.Image;
+      tempImage = new Bitmap(image);
+      g = Graphics.FromImage(tempImage);
+      Font drawFont = new Font("Arial", 16);
+      g.DrawString(digit.ToString(), drawFont, Brushes.Black, new Point(point.X - 10, point.Y - 10));
+      paint = false;
+      pictureBox1.Image = tempImage;
+      pictureBox1.Invalidate();
+      g.Dispose();
+    }
         private void drawBorder(Pair<Point> border)
         {
             paint = true;
@@ -158,7 +177,7 @@ namespace InterfaceForCV
             g.DrawLine(pen, border.first, new Point(border.second.X, border.first.Y));
             g.DrawLine(pen, new Point(border.first.X, border.second.Y), border.second);
             g.DrawLine(pen, new Point(border.second.X, border.first.Y), border.second);
-
+    
             paint = false;
 
             pictureBox1.Image = tempImage;

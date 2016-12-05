@@ -12,6 +12,7 @@ using System.Threading;
 using ImagePreprocessing;
 using NeuralNetworik.NN;
 using NumberRecognition;
+using System.IO;
 
 namespace InterfaceForCV
 {
@@ -134,7 +135,7 @@ namespace InterfaceForCV
             foreach (var v in digitImages)
             {
                 AreasCounter areasCounter = new AreasCounter(v, v.GetLength(0), v.GetLength(1));
-                int numberOfAreas = areasCounter.countAreas();
+                int numberOfAreas = areasCounter.countAreas();                 
                 RecognitionOfNumbers recognizer = new RecognitionOfNumbers();
                 predictedInts.Add(recognizer.recognizeDigit(v, v.GetLength(0), v.GetLength(1), numberOfAreas));
               //  Preprocessing preprocessing = new Preprocessing(v, v.GetLength(0), v.GetLength(1));

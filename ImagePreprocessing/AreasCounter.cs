@@ -112,7 +112,7 @@ namespace ImagePreprocessing
 
                 }
 
-            int label = 1;
+            int label = 2;//1
             
             while (segmentedPoints < (imageHeight + 2) * (imageWidth + 2))
             {
@@ -120,7 +120,7 @@ namespace ImagePreprocessing
                 segmentImage(segmentedImage, label);
             }
             
-            return label - 2;
+            return label - 4;//2
         }
 
 

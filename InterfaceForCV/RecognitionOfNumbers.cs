@@ -11,6 +11,7 @@ namespace InterfaceForCV
     public class RecognitionOfNumbers
     {
     private string _path = "distribution.in";
+    private string _logPath = "results.log";
     private List<int[]> distributions;
     private int[] digitDistribution;
     private int numberOfExamples;
@@ -200,6 +201,21 @@ namespace InterfaceForCV
         {
             double [] freq = getStatistic(image,N, M);
             int res = selectDigit(freq, numOfClosedArea);
+        // need to add real digit value
+            if(File.Exists(_logPath))
+            {
+              string[] line = new string[1];
+              line[0] = res.ToString() + " : ";
+
+              for (int i = 0; i< 4; i++)
+                {
+                  line[0] += Convert.ToInt32(freq[i] * 100).ToString();
+                  if (i != 3)
+                    line[0] += " ";
+                }
+             File.AppendAllLines(_logPath, line);
+            }
+
             return res;
         }
     }
